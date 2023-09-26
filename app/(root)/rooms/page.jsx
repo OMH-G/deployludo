@@ -37,7 +37,10 @@ export default function Rooms() {
           fetchRooms();
         }
       )
-      .subscribe();
+      .subscribe()
+      .catch((error) => {
+        console.error("WebSocket subscription error:", error);
+      });
 
     // console.log("Success!", response.data.code);
   }, []);
