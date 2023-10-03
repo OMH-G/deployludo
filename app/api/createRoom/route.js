@@ -23,7 +23,9 @@ export async function POST(NextRequest) {
       newValue,
       userName
     );
-    return NextResponse.json("Room created", { status: 200 });
+
+      console.log(response)
+    return NextResponse.json("Room created");
   } catch (error) {
     return NextResponse.json(
       { error: "An error occurred at createRoom server: " + error.message },
