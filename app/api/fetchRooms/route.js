@@ -6,7 +6,7 @@ export async function GET() {
     // if(NextRequest.)
 
     const roomArray = await fetchRooms();
-
+    console.log(roomArray);
     return NextResponse.json({ roomArray }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

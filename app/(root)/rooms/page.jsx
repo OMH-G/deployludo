@@ -44,23 +44,23 @@ export default function Rooms() {
   }, [user]);
 
   useEffect(() => {
-    fetchRooms();
+    setRooms
+    console.log("database change occured", user);
     const Room = supabase
-      .channel("custom-all-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "Room" },
-        (payload) => {
-          console.log("Change received!", payload);
-          // setRooms(payload.new);
-          fetchRooms();
-        }
+    .channel("custom-insert-channel")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "Room" },
+      (payload) => {
+        console.log("Change received!", payload);
+        fetchRooms();
+      }
       )
       .subscribe();
-
+      
+      fetchRooms();
     // console.log("Success!", response.data.code);
   }, [user]);
-
   const fetchRooms = async () => {
     if (user) {
       try {
@@ -76,6 +76,7 @@ export default function Rooms() {
   };
 
   const addRoom = () => {
+    setRooms([])
     const createRoom = async () => {
       if (user) {
         try {
@@ -94,7 +95,6 @@ export default function Rooms() {
             if (roomdata.length !== rooms.length) {
               setRooms(roomdata);
             } else {
-              setRooms([]);
               fetchRooms();
             }
           }
@@ -126,19 +126,16 @@ export default function Rooms() {
   };
 
   const removeRoom = async (index, roomid) => {
+    setRooms([])
     if (user && roomid) {
       try {
-        // const updatedRooms = [...rooms];
+        const updatedRooms = [...rooms];
         const data = {
           userId: user.id,
           roomId: roomid,
         };
 
         const response = await axios.post("/api/deleteRoom", data);
-        if (response) {
-          setRooms([]);
-          fetchRooms();
-        }
         // console.log(response);
         // updatedRooms.splice(index, 1);
         // setRooms(updatedRooms);
@@ -146,6 +143,7 @@ export default function Rooms() {
         console.log("Error while deleting the room");
       }
     }
+    fetchRooms();
   };
 
   const playbuttonclicked = (roomid, userid) => {
