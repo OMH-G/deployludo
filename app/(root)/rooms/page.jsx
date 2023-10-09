@@ -16,6 +16,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 export default function Rooms() {
+  
   const [rooms, setRooms] = useState([]);
 
   const { roomID, setRoomID } = useRoomID();
@@ -25,7 +26,9 @@ export default function Rooms() {
   const [newRoomName, setNewRoomName] = useState("");
   const [newValue, setNewValue] = useState(0);
   const [chips, setChips] = useState("");
-
+  useEffect(()=>{
+    console.log(user);
+  })
   useEffect(() => {
     const getUserChips = async () => {
       if (user) {
@@ -46,18 +49,18 @@ export default function Rooms() {
     console.log(rooms);
     fetchRooms();
     const Room = supabase
-      .channel("custom-all-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "Room" },
-        (payload) => {
-          console.log("Change received!", payload);
-          // setRooms(payload.new);
-          fetchRooms();
-        }
+    .channel("custom-insert-channel")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "Room" },
+      (payload) => {
+        console.log("Change received!", payload);
+        fetchRooms();
+      }
       )
       .subscribe();
-
+      
+      fetchRooms();
     // console.log("Success!", response.data.code);
   }, [user]);
   const fetchRooms = async () => {
@@ -79,6 +82,7 @@ export default function Rooms() {
   };
 
   const addRoom = () => {
+    setRooms([])
     const createRoom = async () => {
       if (user) {
         try {
@@ -95,9 +99,10 @@ export default function Rooms() {
             console.log("setting user", rooms);
             let roomdata = await axios.post("https://ludo-server-teal.vercel.app/createRoom", data);
             console.log('asdkllaskd',roomdata.data['message']);
-            // setRoomID(roomdata.data['message'])
+            setRoomID(roomdata.data['message'])
             assignuser(roomdata.data['message'],user.id);
             
+
           }
 
           // console.log(roomdata);
@@ -128,10 +133,11 @@ export default function Rooms() {
   };
 
   const removeRoom = async (index, roomid) => {
-    console.log(user,roomid)
+
+    setRooms([])
     if (user && roomid) {
       try {
-        // const updatedRooms = [...rooms];
+        const updatedRooms = [...rooms];
         const data = {
           userId: user.id,
           roomId: roomid,
@@ -141,6 +147,7 @@ export default function Rooms() {
         if (response) {
           setRooms([]);
         }
+
         // console.log(response);
         // updatedRooms.splice(index, 1);
         // setRooms(updatedRooms);
@@ -148,6 +155,7 @@ export default function Rooms() {
         console.log("Error while deleting the room");
       }
     }
+    fetchRooms();
   };
 
   const assignuser = async (roomid, userid) => {
@@ -228,7 +236,7 @@ export default function Rooms() {
         </Link>
       </div>
       <ul className="w-11/12 md:w-1/2">
-        <button onClick={fetchRooms}>test</button>
+        {/* <button onClick={getUserFromClerk}>getUserFromClerk</button> */}
         {Array.isArray(rooms) &&
           rooms.map((room, index) => (
             <li key={index} className="mb-4">
