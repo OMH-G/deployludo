@@ -63,13 +63,7 @@ export default function Rooms() {
   const fetchRooms = async () => {
     if (user) {
       try {
-        const response = await axios.get("https://ludo-server-teal.vercel.app/fetchroom", {
-          headers: {
-            "Cache-Control": "no-store, must-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-          },
-        });
+        const response = await axios.get("https://ludo-server-teal.vercel.app/fetchroom");
         console.log("fetching rooms", response.data['message']);
         setRooms(response.data['message']);
       } catch (error) {
