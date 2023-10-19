@@ -47,6 +47,7 @@ export default function Room({ params }) {
           let Ownerd = store_owner.data.message;
           console.log("Store user", store_user.data.message, Ownerd);
           setDatabase(usersInRoom);
+
           setOwner(Ownerd);
           // console.log("Owner in room", store_owner.data, usersInRoom.data);
           // if (usersInRoom.find((obj) => obj.name === Ownerd)) {
@@ -54,6 +55,7 @@ export default function Room({ params }) {
           // } else {
           //   setRoomCode(null);
           // }
+
         }
       } catch (error) {
         console.log("fetchroom error");
@@ -92,6 +94,7 @@ export default function Room({ params }) {
     // getRoomCode();
     // }
   }, [roomID]);
+
 
   function goBack(userid) {
     router.back();
